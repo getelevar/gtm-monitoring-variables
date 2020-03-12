@@ -18,6 +18,17 @@ ___TEMPLATE_PARAMETERS___
 [
   {
     "type": "TEXT",
+    "name": "variableName",
+    "displayName": "Variable Name",
+    "simpleValueType": true,
+    "valueValidators": [
+      {
+        "type": "NON_EMPTY"
+      }
+    ]
+  },
+  {
+    "type": "TEXT",
     "name": "dataLayerKey",
     "displayName": "Data Layer Key",
     "simpleValueType": true,
@@ -167,10 +178,11 @@ Function to add new error to validation_errors
 message - error message
 error_id - id that can be used to identify errors
 */
-const addError = (eventId, dataLayerKey) => (value, condition, expected) => {
-  log({
+const addError = (eventId, dataLayerKey, variableName) => (value, condition, expected) => {
+  log('GTM Error: ', {
     eventId: eventId,
   	dataLayerKey: dataLayerKey,
+    variableName: variableName,
     error: {
       value: value,
       condition: condition,
@@ -181,6 +193,7 @@ const addError = (eventId, dataLayerKey) => (value, condition, expected) => {
   addValidationError({
     eventId: eventId,
     dataLayerKey: dataLayerKey,
+    variableName: variableName,
     error: {
       message: dataLayerKey + '=' + value + ' ' + condition + ' ' + expected,
       value: value,
@@ -190,7 +203,7 @@ const addError = (eventId, dataLayerKey) => (value, condition, expected) => {
   });
 };
 
-const newError = addError(data.gtmEventId, data.dataLayerKey);
+const newError = addError(data.gtmEventId, data.dataLayerKey, data.variableName);
 
 const isValid = (value, condition, expectedValue) => {
   switch (condition) {
