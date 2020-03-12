@@ -242,6 +242,7 @@ const isValid = (value, condition, expectedValue) => {
       return true;
 
     case "notContain":
+      if (getType(value) === 'number') value = value.toString();
       if (value.indexOf(expectedValue) > -1) {
         return false;
       }
@@ -315,10 +316,10 @@ const validateArray = (arr, table) => {
 };
 
 // Custom dataLayer get function to fix permission error
-const getDataLayerValue = key => {
+const getDataLayerValue = (copyFromDataLayerFunc, key) => {
   if (key.indexOf(".0") !== -1) {
     const split = key.split(".0");
-	const initialValue = copyFromDataLayer(split[0]);
+	const initialValue = copyFromDataLayerFunc(split[0]);
     if (!initialValue) return initialValue;
     
     return split.slice(1).reduce((a, v) => {
@@ -328,13 +329,13 @@ const getDataLayerValue = key => {
       return deepValue(a[0], v.slice(1));
     }, initialValue);
   }
-  return copyFromDataLayer(key);
+  return copyFromDataLayerFunc(key);
 };
 
 const validationTable = data.validationTable;
 const valueType = data.valueType;
 const debugMode = data.debugMode;
-const dataLayerValue = getDataLayerValue(data.dataLayerKey);
+const dataLayerValue = getDataLayerValue(copyFromDataLayer, data.dataLayerKey);
 
 // Don't validate if item is undefined
 // But add error if item is required
@@ -516,8 +517,44 @@ ___WEB_PERMISSIONS___
 
 ___TESTS___
 
-scenarios: []
-setup: ''
+scenarios:
+- name: Validation / Value / Is of type
+  code: |-
+    // Call runCode to run the template's code.
+    let variableResult = runCode(mockData);
+
+    // Verify that the variable returns a result.
+    assertThat(window.elevar_gtm_errors).hasLength(0);
+    assertThat(variableResult).isEqualTo(100);
+- name: Validation / Value / Does not contain
+  code: |-
+    mockData.validationTable[0] = { key: "", condition: "notContain", conditionValue: "false" };
+
+    // Call runCode to run the template's code.
+    let variableResult = runCode(mockData);
+
+    // Verify that the variable returns a result.
+    assertThat(variableResult).isNotEqualTo(false);
+setup: "const log = require('logToConsole');\n\n/* MockData provided by input fields\
+  \ */\nlet mockData = {\n  variableName: \"Variable Name\",\n  valueType: \"value\"\
+  ,\n  validationTable: [{ key: \"\", condition: \"isType\", conditionValue: \"number\"\
+  \ }],\n  debugMode: false,\n  dataLayerKey: \"ecommerce.impressions.0.price\",\n\
+  \  required: true,\n  gtmEventId: 0\n};\n\nlet window = {};\nlet dataLayer = {\n\
+  \  ecommerce: {\n    currencyCode: \"USD\",\n    actionField: {\n      list: \"\
+  Shopping Cart\"\n    },\n    impressions: [\n      {\n        position: 0,\n   \
+  \     id: \"\",\n        productId: 4518425362468,\n        variantId: 31697496047652,\n\
+  \        shopifyId: \"shopify_US_4518425362468_31697496047652\",\n        name:\
+  \ \"14 Day Challenge - Starts March 9th\",\n        quantity: 1,\n        price:\
+  \ 100,\n        brand: \"Elevar Gear - This is a Test Store\",\n        variant:\
+  \ null\n      }\n    ]\n  }\n};\n\nmock('copyFromDataLayer', (variableName) => {\n\
+  \  switch(variableName) {\n    case \"ecommerce\":\n      return dataLayer.ecommerce;\n\
+  \    case \"ecommerce.currencyCode\":\n      return dataLayer.ecommerce.currencyCode;\n\
+  \    case \"ecommerce.impressions\":\n      return dataLayer.ecommerce.impressions;\n\
+  \    default:\n      return undefined;\n  }\n});\n\n/*\nCreates an array in the\
+  \ window with the key provided and\nreturns a function that pushes items to that\
+  \ array.\n*/\nmock('createQueue', (key) => {\n  const pushToArray = (arr) => (item)\
+  \ => {\n    arr.push(item);\n  };\n  \n  if (!window[key]) window[key] = [];\n \
+  \ return pushToArray(window[key]);\n});\n"
 
 
 ___NOTES___
