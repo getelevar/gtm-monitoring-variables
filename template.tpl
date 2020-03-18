@@ -357,13 +357,17 @@ if (!debugMode) {
   } else {
     switch (valueType) {
       case "value":
-          validateValue(dataLayerValue, validationTable);
+        // Exit early if there are no table values.
+		if (!validationTable) return;
+        validateValue(dataLayerValue, validationTable);
         break;
 
       case 'object':
         if (getType(dataLayerValue) !== 'object') {
           newError(dataLayerValue, 'typeOf', 'object');
         }
+        // Exit early if there are no table values.
+		if (!validationTable) return;
         validateObject(dataLayerValue, validationTable);
         break;
 
@@ -371,6 +375,8 @@ if (!debugMode) {
         if (getType(dataLayerValue) !== 'array') {
           newError(dataLayerValue, 'typeOf', 'array');
         }
+        // Exit early if there are no table values.
+		if (!validationTable) return;
         validateArray(dataLayerValue, validationTable);
         break;
 
