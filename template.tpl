@@ -371,7 +371,7 @@ if (!debugMode) {
         validateObject(dataLayerValue, validationTable);
         break;
 
-      case 'array': 
+      case 'array':
         if (getType(dataLayerValue) !== 'array') {
           newError(dataLayerValue, 'typeOf', 'array');
         }
@@ -403,7 +403,7 @@ ___WEB_PERMISSIONS___
           "key": "environments",
           "value": {
             "type": 1,
-            "string": "all"
+            "string": "debug"
           }
         }
       ]
@@ -816,6 +816,45 @@ scenarios:
 
     // No errors
     assertThat(window.elevar_gtm_errors).hasLength(mockData.validationTable.length * dataLayer.ecommerce.productNames.length);
+- name: Validation / Array of Objects - VALID
+  code: "mockData.valueType = \"array\";\nmockData.dataLayerKey = \"ecommerce.impressions\"\
+    ;\nmockData.validationTable = [\n  { key: \"price\", condition: \"isType\", conditionValue:\
+    \ \"number\" },\n  { key: \"name\", condition: \"notType\", conditionValue: \"\
+    undefined\" },\n];\n\ndataLayer.ecommerce.impressions.push({\n  position: 0,\n\
+    \  id: \"\",\n  productId: 3182798217321,\n  variantId: 894576984034,\n  shopifyId:\
+    \ \"shopify_US_4518425362468_31697496047652\",\n  name: \"Product\",\n  isCool:\
+    \ true,\n  quantity: 1,\n  price: 12.99,\n});\n\n\n/*\n\tNOTE:\n\tThis test fails\
+    \ when GTM cannot return the array of\n\tobjects if it contains values that are\
+    \ null. There is some\n    conversion happening between GTM returning the items\
+    \ and the\n\tvariableResult receiving them.\n*/\nlet variableResult = runCode(mockData);\n\
+    \n// Verify that the variable returns the correct value.\nassertThat(variableResult).isEqualTo(dataLayer.ecommerce.impressions);\n\
+    \n// No errors\nassertThat(window.elevar_gtm_errors).hasLength(0);"
+- name: Validation / Array of Objects - multiple INVALID
+  code: "mockData.valueType = \"array\";\nmockData.dataLayerKey = \"ecommerce.impressions\"\
+    ;\nmockData.validationTable = [\n  { key: \"id\", condition: \"notEqual\", conditionValue:\
+    \ \"\" },\n];\n\ndataLayer.ecommerce.impressions.push({\n  position: 0,\n  id:\
+    \ \"\", // Invalid field\n  productId: 3182798217321,\n  variantId: 894576984034,\n\
+    \  shopifyId: \"shopify_US_4518425362468_31697496047652\",\n  name: \"Product\"\
+    ,\n  isCool: true,\n  quantity: 1,\n  price: 12.99,\n});\n\n\n/*\n\tNOTE:\n\t\
+    This test fails when GTM cannot return the array of\n\tobjects if it contains\
+    \ values that are null. There is some\n    conversion happening between GTM returning\
+    \ the items and the\n\tvariableResult receiving them.\n*/\nlet variableResult\
+    \ = runCode(mockData);\n\n// Verify that the variable returns the correct value.\n\
+    assertThat(variableResult).isEqualTo(dataLayer.ecommerce.impressions);\n\n// No\
+    \ errors\nassertThat(window.elevar_gtm_errors).hasLength(2);"
+- name: Validation / Array of Objects - single INVALID
+  code: "mockData.valueType = \"array\";\nmockData.dataLayerKey = \"ecommerce.impressions\"\
+    ;\nmockData.validationTable = [\n  { key: \"price\", condition: \"isType\", conditionValue:\
+    \ \"number\" },\n];\n\ndataLayer.ecommerce.impressions.push({\n  position: 0,\n\
+    \  id: \"\",\n  productId: 3182798217321,\n  variantId: 894576984034,\n  shopifyId:\
+    \ \"shopify_US_4518425362468_31697496047652\",\n  name: \"Product\",\n  isCool:\
+    \ true,\n  quantity: 1,\n  price: \"12.99\", // Invalid field\n});\n\n\n/*\n\t\
+    NOTE:\n\tThis test fails when GTM cannot return the array of\n\tobjects if it\
+    \ contains values that are null. There is some\n    conversion happening between\
+    \ GTM returning the items and the\n\tvariableResult receiving them.\n*/\nlet variableResult\
+    \ = runCode(mockData);\n\n// Verify that the variable returns the correct value.\n\
+    assertThat(variableResult).isEqualTo(dataLayer.ecommerce.impressions);\n\n// No\
+    \ errors\nassertThat(window.elevar_gtm_errors).hasLength(1);"
 setup: "const log = require('logToConsole');\n\n/* MockData provided by input fields\
   \ */\nlet mockData = {\n  variableName: \"Variable Name\",\n  valueType: \"value\"\
   ,\n  validationTable: [{ key: \"\", condition: \"isType\", conditionValue: \"number\"\
@@ -827,16 +866,16 @@ setup: "const log = require('logToConsole');\n\n/* MockData provided by input fi
   \        variantId: 31697496047652,\n        shopifyId: \"shopify_US_4518425362468_31697496047652\"\
   ,\n        name: \"14 Day Challenge - Starts March 9th\",\n        isCool: true,\n\
   \        quantity: 1,\n        price: 100,\n        brand: \"Elevar Gear - This\
-  \ is a Test Store\",\n        variant: null\n      },\n    ]\n  }\n};\n\nmock('copyFromDataLayer',\
-  \ (variableName) => {\n  switch(variableName) {\n    case \"ecommerce\":\n     \
-  \ return dataLayer.ecommerce;\n    case \"ecommerce.currencyCode\":\n      return\
-  \ dataLayer.ecommerce.currencyCode;\n    case \"ecommerce.impressions\":\n     \
-  \ return dataLayer.ecommerce.impressions;\n    case \"ecommerce.productNames\":\n\
-  \      return dataLayer.ecommerce.productNames;\n    default:\n      return undefined;\n\
-  \  }\n});\n\n/*\nCreates an array in the window with the key provided and\nreturns\
-  \ a function that pushes items to that array.\n*/\nmock('createQueue', (key) =>\
-  \ {\n  const pushToArray = (arr) => (item) => {\n    arr.push(item);\n  };\n  \n\
-  \  if (!window[key]) window[key] = [];\n  return pushToArray(window[key]);\n});\n"
+  \ is a Test Store\",\n      },\n    ]\n  }\n};\n\nmock('copyFromDataLayer', (variableName)\
+  \ => {\n  switch(variableName) {\n    case \"ecommerce\":\n      return dataLayer.ecommerce;\n\
+  \    case \"ecommerce.currencyCode\":\n      return dataLayer.ecommerce.currencyCode;\n\
+  \    case \"ecommerce.impressions\":\n      return dataLayer.ecommerce.impressions;\n\
+  \    case \"ecommerce.productNames\":\n      return dataLayer.ecommerce.productNames;\n\
+  \    default:\n      return undefined;\n  }\n});\n\n/*\nCreates an array in the\
+  \ window with the key provided and\nreturns a function that pushes items to that\
+  \ array.\n*/\nmock('createQueue', (key) => {\n  const pushToArray = (arr) => (item)\
+  \ => {\n    arr.push(item);\n  };\n  \n  if (!window[key]) window[key] = [];\n \
+  \ return pushToArray(window[key]);\n});\n"
 
 
 ___NOTES___
