@@ -456,6 +456,90 @@ ___WEB_PERMISSIONS___
               {
                 "type": 1,
                 "string": "SearchTerms"
+              },
+              {
+                "type": 1,
+                "string": "CustomerEmail"
+              },
+              {
+                "type": 1,
+                "string": "visitorId"
+              },
+              {
+                "type": 1,
+                "string": "visitorType"
+              },
+              {
+                "type": 1,
+                "string": "CustomerId"
+              },
+              {
+                "type": 1,
+                "string": "CustomerOrdersCount"
+              },
+              {
+                "type": 1,
+                "string": "CustomerTotalSpent"
+              },
+              {
+                "type": 1,
+                "string": "pageType"
+              },
+              {
+                "type": 1,
+                "string": "cartTotal"
+              },
+              {
+                "type": 1,
+                "string": "shopifyProductId"
+              },
+              {
+                "type": 1,
+                "string": "VariantCompareAtPrice"
+              },
+              {
+                "type": 1,
+                "string": "cartItems"
+              },
+              {
+                "type": 1,
+                "string": "event"
+              },
+              {
+                "type": 1,
+                "string": "discountTotalAmount"
+              },
+              {
+                "type": 1,
+                "string": "discountTotalSavings"
+              },
+              {
+                "type": 1,
+                "string": "CustomerCity"
+              },
+              {
+                "type": 1,
+                "string": "CustomerZip"
+              },
+              {
+                "type": 1,
+                "string": "CustomerAddress1"
+              },
+              {
+                "type": 1,
+                "string": "CustomerAddress2"
+              },
+              {
+                "type": 1,
+                "string": "CustomerCountryCode"
+              },
+              {
+                "type": 1,
+                "string": "CustomerProvince"
+              },
+              {
+                "type": 1,
+                "string": "CustomerOrdersCount"
               }
             ]
           }
