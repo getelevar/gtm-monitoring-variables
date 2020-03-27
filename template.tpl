@@ -358,7 +358,7 @@ if (!debugMode) {
     switch (valueType) {
       case "value":
         // Exit early if there are no table values.
-		if (!validationTable) return;
+		if (!validationTable) break;
         validateValue(dataLayerValue, validationTable);
         break;
 
@@ -367,16 +367,16 @@ if (!debugMode) {
           newError(dataLayerValue, 'typeOf', 'object');
         }
         // Exit early if there are no table values.
-		if (!validationTable) return;
+		if (!validationTable) break;
         validateObject(dataLayerValue, validationTable);
         break;
 
-      case 'array':
+      case 'array': 
         if (getType(dataLayerValue) !== 'array') {
           newError(dataLayerValue, 'typeOf', 'array');
         }
         // Exit early if there are no table values.
-		if (!validationTable) return;
+		if (!validationTable) break;
         validateArray(dataLayerValue, validationTable);
         break;
 
@@ -776,6 +776,41 @@ scenarios:
 
     // No errors
     assertThat(window.elevar_gtm_errors).hasLength(mockData.validationTable.length);
+- name: Validation / Value / Index of Array
+  code: |-
+    mockData = {
+      variableName: "Variable Name",
+      valueType: "value",
+      debugMode: false,
+      dataLayerKey: "ecommerce.productNames.0",
+      required: true,
+      gtmEventId: 0
+    };
+
+    // Call runCode to run the template's code.
+    let variableResult = runCode(mockData);
+
+    // Verify that the variable returns a result.
+    assertThat(variableResult).isNotEqualTo(undefined);
+    assertThat(variableResult).isNotEqualTo(false);
+    assertThat(variableResult).isEqualTo(dataLayer.ecommerce.productNames[0]);
+- name: Validation / Value / No validation conditions
+  code: |-
+    mockData = {
+      variableName: "Variable Name",
+      valueType: "value",
+      debugMode: false,
+      dataLayerKey: "ecommerce.impressions.0.price",
+      required: true,
+      gtmEventId: 0
+    };
+
+    // Call runCode to run the template's code.
+    let variableResult = runCode(mockData);
+
+    // Verify that the variable returns a result.
+    assertThat(variableResult).isNotEqualTo(undefined);
+    assertThat(variableResult).isEqualTo(100);
 - name: Validation / Array of Strings - VALID
   code: |-
     mockData.valueType = "array";
@@ -817,65 +852,159 @@ scenarios:
     // No errors
     assertThat(window.elevar_gtm_errors).hasLength(mockData.validationTable.length * dataLayer.ecommerce.productNames.length);
 - name: Validation / Array of Objects - VALID
-  code: "mockData.valueType = \"array\";\nmockData.dataLayerKey = \"ecommerce.impressions\"\
-    ;\nmockData.validationTable = [\n  { key: \"price\", condition: \"isType\", conditionValue:\
-    \ \"number\" },\n  { key: \"name\", condition: \"notType\", conditionValue: \"\
-    undefined\" },\n];\n\ndataLayer.ecommerce.impressions.push({\n  position: 0,\n\
-    \  id: \"\",\n  productId: 3182798217321,\n  variantId: 894576984034,\n  shopifyId:\
-    \ \"shopify_US_4518425362468_31697496047652\",\n  name: \"Product\",\n  isCool:\
-    \ true,\n  quantity: 1,\n  price: 12.99,\n});\n\n\n/*\n\tNOTE:\n\tThis test fails\
-    \ when GTM cannot return the array of\n\tobjects if it contains values that are\
-    \ null. There is some\n    conversion happening between GTM returning the items\
-    \ and the\n\tvariableResult receiving them.\n*/\nlet variableResult = runCode(mockData);\n\
-    \n// Verify that the variable returns the correct value.\nassertThat(variableResult).isEqualTo(dataLayer.ecommerce.impressions);\n\
-    \n// No errors\nassertThat(window.elevar_gtm_errors).hasLength(0);"
-- name: Validation / Array of Objects - multiple INVALID
-  code: "mockData.valueType = \"array\";\nmockData.dataLayerKey = \"ecommerce.impressions\"\
-    ;\nmockData.validationTable = [\n  { key: \"id\", condition: \"notEqual\", conditionValue:\
-    \ \"\" },\n];\n\ndataLayer.ecommerce.impressions.push({\n  position: 0,\n  id:\
-    \ \"\", // Invalid field\n  productId: 3182798217321,\n  variantId: 894576984034,\n\
-    \  shopifyId: \"shopify_US_4518425362468_31697496047652\",\n  name: \"Product\"\
-    ,\n  isCool: true,\n  quantity: 1,\n  price: 12.99,\n});\n\n\n/*\n\tNOTE:\n\t\
-    This test fails when GTM cannot return the array of\n\tobjects if it contains\
-    \ values that are null. There is some\n    conversion happening between GTM returning\
-    \ the items and the\n\tvariableResult receiving them.\n*/\nlet variableResult\
-    \ = runCode(mockData);\n\n// Verify that the variable returns the correct value.\n\
-    assertThat(variableResult).isEqualTo(dataLayer.ecommerce.impressions);\n\n// No\
-    \ errors\nassertThat(window.elevar_gtm_errors).hasLength(2);"
-- name: Validation / Array of Objects - single INVALID
-  code: "mockData.valueType = \"array\";\nmockData.dataLayerKey = \"ecommerce.impressions\"\
-    ;\nmockData.validationTable = [\n  { key: \"price\", condition: \"isType\", conditionValue:\
-    \ \"number\" },\n];\n\ndataLayer.ecommerce.impressions.push({\n  position: 0,\n\
-    \  id: \"\",\n  productId: 3182798217321,\n  variantId: 894576984034,\n  shopifyId:\
-    \ \"shopify_US_4518425362468_31697496047652\",\n  name: \"Product\",\n  isCool:\
-    \ true,\n  quantity: 1,\n  price: \"12.99\", // Invalid field\n});\n\n\n/*\n\t\
-    NOTE:\n\tThis test fails when GTM cannot return the array of\n\tobjects if it\
-    \ contains values that are null. There is some\n    conversion happening between\
-    \ GTM returning the items and the\n\tvariableResult receiving them.\n*/\nlet variableResult\
-    \ = runCode(mockData);\n\n// Verify that the variable returns the correct value.\n\
-    assertThat(variableResult).isEqualTo(dataLayer.ecommerce.impressions);\n\n// No\
-    \ errors\nassertThat(window.elevar_gtm_errors).hasLength(1);"
+  code: |
+    mockData = {
+      variableName: "Variable Name",
+      valueType: "array",
+      debugMode: false,
+      validationTable: [
+        { key: "name", condition: "notEqual", conditionValue: "tommy"},
+        { key: "type", condition: "equals", conditionValue: "person"},
+      ],
+      dataLayerKey: "ecommerce.objectList",
+      required: true,
+      gtmEventId: 0
+    };
+
+    // Call runCode to run the template's code.
+    let variableResult = runCode(mockData);
+
+    // Verify that the variable returns a result.
+    assertThat(variableResult).isNotEqualTo(undefined);
+    assertThat(variableResult).isEqualTo(dataLayer.ecommerce.objectList);
+    assertThat(window.elevar_gtm_errors).hasLength(0);
+- name: Validation / Array of Objects - INVALID
+  code: |
+    mockData = {
+      variableName: "Variable Name",
+      valueType: "array",
+      debugMode: false,
+      validationTable: [
+        { key: "name", condition: "notEqual", conditionValue: "tommy"},
+        { key: "name", condition: "equals", conditionValue: "bob" },
+        { key: "type", condition: "equals", conditionValue: "person"},
+      ],
+      dataLayerKey: "ecommerce.objectList",
+      required: true,
+      gtmEventId: 0
+    };
+
+    // Call runCode to run the template's code.
+    let variableResult = runCode(mockData);
+
+    // Verify that the variable returns a result.
+    assertThat(variableResult).isNotEqualTo(undefined);
+    assertThat(variableResult).isEqualTo(dataLayer.ecommerce.objectList);
+    assertThat(window.elevar_gtm_errors).hasLength(1);
+    assertThat(window.elevar_gtm_errors[0].error.value).isEqualTo("reese");
+    assertThat(window.elevar_gtm_errors[0].error.condition).isEqualTo("equals");
+    assertThat(window.elevar_gtm_errors[0].error.conditionValue).isEqualTo("bob");
+- name: Validation / Array / No validation conditions
+  code: |-
+    mockData = {
+      variableName: "Variable Name",
+      valueType: "array",
+      debugMode: false,
+      dataLayerKey: "ecommerce.productNames",
+      required: true,
+      gtmEventId: 0
+    };
+
+    // Call runCode to run the template's code.
+    let variableResult = runCode(mockData);
+
+    // Verify that the variable returns a result.
+    assertThat(variableResult).isNotEqualTo(undefined);
+    assertThat(variableResult).isEqualTo(dataLayer.ecommerce.productNames);
+- name: Validation / Object / No validation conditions
+  code: |-
+    mockData = {
+      variableName: "Variable Name",
+      valueType: "object",
+      debugMode: false,
+      dataLayerKey: "ecommerce.actionField",
+      required: true,
+      gtmEventId: 0
+    };
+
+    // Call runCode to run the template's code.
+    let variableResult = runCode(mockData);
+
+    // Verify that the variable returns a result.
+    assertThat(variableResult).isNotEqualTo(undefined);
+    assertThat(variableResult).isNotEqualTo(false);
+    assertThat(variableResult).isEqualTo(dataLayer.ecommerce.actionField);
+- name: Validation / Object / With validation conditions - VALID
+  code: |
+    mockData = {
+      variableName: "Variable Name",
+      valueType: "object",
+      debugMode: false,
+      validationTable: [
+        { key: "name", condition: "notEqual", conditionValue: "tommy"},
+        { key: "name", condition: "equals", conditionValue: "bob"},
+        { key: "type", condition: "equals", conditionValue: "person"},
+      ],
+      dataLayerKey: "ecommerce.objectList.0",
+      required: true,
+      gtmEventId: 0
+    };
+
+    // Call runCode to run the template's code.
+    let variableResult = runCode(mockData);
+
+    // Verify that the variable returns a result.
+    assertThat(variableResult).isNotEqualTo(undefined);
+    assertThat(variableResult).isEqualTo({ name: 'bob', type: 'person' });
+    assertThat(window.elevar_gtm_errors).hasLength(0);
+- name: Validation / Object / With validation conditions - INVALID
+  code: |
+    mockData = {
+      variableName: "Variable Name",
+      valueType: "object",
+      debugMode: false,
+      validationTable: [
+        { key: "name", condition: "notEqual", conditionValue: "tommy"},
+        { key: "name", condition: "equals", conditionValue: "reese"},
+        { key: "type", condition: "equals", conditionValue: "person"},
+      ],
+      dataLayerKey: "ecommerce.objectList.0",
+      required: true,
+      gtmEventId: 0
+    };
+
+    // Call runCode to run the template's code.
+    let variableResult = runCode(mockData);
+
+    // Verify that the variable returns a result.
+    assertThat(variableResult).isNotEqualTo(undefined);
+    assertThat(variableResult).isEqualTo({ name: 'bob', type: 'person' });
+    assertThat(window.elevar_gtm_errors).hasLength(1);
 setup: "const log = require('logToConsole');\n\n/* MockData provided by input fields\
   \ */\nlet mockData = {\n  variableName: \"Variable Name\",\n  valueType: \"value\"\
   ,\n  validationTable: [{ key: \"\", condition: \"isType\", conditionValue: \"number\"\
   \ }],\n  debugMode: false,\n  dataLayerKey: \"ecommerce.impressions.0.price\",\n\
   \  required: true,\n  gtmEventId: 0\n};\n\nlet window = {};\nlet dataLayer = {\n\
   \  ecommerce: {\n    currencyCode: \"USD\",\n    actionField: {\n      list: \"\
-  Shopping Cart\"\n    },\n    productNames: ['name1', 'name2', 'name3'],\n    impressions:\
-  \ [\n      {\n        position: 0,\n        id: \"\",\n        productId: 4518425362468,\n\
-  \        variantId: 31697496047652,\n        shopifyId: \"shopify_US_4518425362468_31697496047652\"\
-  ,\n        name: \"14 Day Challenge - Starts March 9th\",\n        isCool: true,\n\
-  \        quantity: 1,\n        price: 100,\n        brand: \"Elevar Gear - This\
-  \ is a Test Store\",\n      },\n    ]\n  }\n};\n\nmock('copyFromDataLayer', (variableName)\
-  \ => {\n  switch(variableName) {\n    case \"ecommerce\":\n      return dataLayer.ecommerce;\n\
-  \    case \"ecommerce.currencyCode\":\n      return dataLayer.ecommerce.currencyCode;\n\
-  \    case \"ecommerce.impressions\":\n      return dataLayer.ecommerce.impressions;\n\
-  \    case \"ecommerce.productNames\":\n      return dataLayer.ecommerce.productNames;\n\
-  \    default:\n      return undefined;\n  }\n});\n\n/*\nCreates an array in the\
-  \ window with the key provided and\nreturns a function that pushes items to that\
-  \ array.\n*/\nmock('createQueue', (key) => {\n  const pushToArray = (arr) => (item)\
-  \ => {\n    arr.push(item);\n  };\n  \n  if (!window[key]) window[key] = [];\n \
-  \ return pushToArray(window[key]);\n});\n"
+  Shopping Cart\",\n      search: \"hello\"\n    },\n    objectList: [{name: 'bob',\
+  \ type: 'person'}, {name: 'reese', type: 'person'}],\n    productNames: ['name1',\
+  \ 'name2', 'name3'],\n    impressions: [\n      {\n        position: 0,\n      \
+  \  id: \"\",\n        productId: 4518425362468,\n        variantId: 31697496047652,\n\
+  \        shopifyId: \"shopify_US_4518425362468_31697496047652\",\n        name:\
+  \ \"14 Day Challenge - Starts March 9th\",\n        isCool: true,\n        quantity:\
+  \ 1,\n        price: 100,\n        brand: \"Elevar Gear - This is a Test Store\"\
+  ,\n        variant: null\n      },\n    ]\n  }\n};\n\nmock('copyFromDataLayer',\
+  \ (variableName) => {\n  switch(variableName) {\n    case \"ecommerce\":\n     \
+  \ return dataLayer.ecommerce;\n    case \"ecommerce.currencyCode\":\n      return\
+  \ dataLayer.ecommerce.currencyCode;\n    case \"ecommerce.impressions\":\n     \
+  \ return dataLayer.ecommerce.impressions;\n    case \"ecommerce.objectList\":\n\
+  \      return dataLayer.ecommerce.objectList;\n    case \"ecommerce.productNames\"\
+  :\n      return dataLayer.ecommerce.productNames;\n    case \"ecommerce.actionField\"\
+  :\n      return dataLayer.ecommerce.actionField;\n    default:\n      return undefined;\n\
+  \  }\n});\n\n/*\nCreates an array in the window with the key provided and\nreturns\
+  \ a function that pushes items to that array.\n*/\nmock('createQueue', (key) =>\
+  \ {\n  const pushToArray = (arr) => (item) => {\n    arr.push(item);\n  };\n  \n\
+  \  if (!window[key]) window[key] = [];\n  return pushToArray(window[key]);\n});\n"
 
 
 ___NOTES___
