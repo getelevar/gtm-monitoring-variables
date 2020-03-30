@@ -162,48 +162,56 @@ ___SANDBOXED_JS_FOR_WEB_TEMPLATE___
 
 // Required Modules
 const log = require("logToConsole");
-const getType = require('getType');
+const getType = require("getType");
 const copyFromDataLayer = require("copyFromDataLayer");
-const createQueue = require('createQueue');
+const createQueue = require("createQueue");
 
-const addValidationError = createQueue('elevar_gtm_errors');
+const addValidationError = createQueue("elevar_gtm_errors");
 
 // Object path traversal function
 const deepValue = (obj, path) => path.split(".").reduce((a, v) => a[v], obj);
 
 /**
-Function to add new error to validation_errors
-
-@params
-message - error message
-error_id - id that can be used to identify errors
-*/
-const addError = (eventId, dataLayerKey, variableName) => (value, condition, expected) => {
-  log('GTM Error: ', {
+ * Function to add new error to validation_errors
+ *
+ * @params
+ * message - error message
+ * error_id - id that can be used to identify errors
+ */
+const addError = (eventId, dataLayerKey, variableName) => (
+  value,
+  condition,
+  expected
+) => {
+  log("GTM Error: ", {
     eventId: eventId,
-  	dataLayerKey: dataLayerKey,
+    dataLayerKey: dataLayerKey,
     variableName: variableName,
     error: {
       value: value,
       condition: condition,
-      conditionValue: expected,
+      conditionValue: expected
     }
   });
-  
+
   addValidationError({
     eventId: eventId,
     dataLayerKey: dataLayerKey,
     variableName: variableName,
     error: {
-      message: dataLayerKey + '=' + value + ' ' + condition + ' ' + expected,
+      message: dataLayerKey + "=" + value + " " + condition + " " + expected,
       value: value,
       condition: condition,
-      conditionValue: expected,
+      conditionValue: expected
     }
   });
 };
 
-const newError = addError(data.gtmEventId, data.dataLayerKey, data.variableName);
+const newError = addError(
+  data.gtmEventId,
+  data.dataLayerKey,
+  data.variableName
+);
 
 const isValid = (value, condition, expectedValue) => {
   switch (condition) {
@@ -214,22 +222,25 @@ const isValid = (value, condition, expectedValue) => {
       return true;
 
     case "contains":
-      if (getType(value) !== 'string') value = value.toString();
+      if (getType(value) !== "string") value = value.toString();
       if (value.indexOf(expectedValue) === -1) {
         return false;
       }
       return true;
 
     case "startsWith":
-      if (getType(value) !== 'string') value = value.toString();
-	  if (value.indexOf(expectedValue) !== 0) {
+      if (getType(value) !== "string") value = value.toString();
+      if (value.indexOf(expectedValue) !== 0) {
         return false;
       }
       return true;
 
     case "endsWith":
-      if (getType(value) !== 'string') value = value.toString();
-	  if (value.lastIndexOf(expectedValue) + expectedValue.length !== value.length) {
+      if (getType(value) !== "string") value = value.toString();
+      if (
+        value.lastIndexOf(expectedValue) + expectedValue.length !==
+        value.length
+      ) {
         return false;
       }
       return true;
@@ -245,39 +256,42 @@ const isValid = (value, condition, expectedValue) => {
       return true;
 
     case "notContain":
-      if (getType(value) !== 'string') value = value.toString();
+      if (getType(value) !== "string") value = value.toString();
       if (value.indexOf(expectedValue) > -1) {
         return false;
       }
       return true;
 
     case "notStartWith":
-      if (getType(value) !== 'string') value = value.toString();
-	  if (value.indexOf(expectedValue) === 0) {
+      if (getType(value) !== "string") value = value.toString();
+      if (value.indexOf(expectedValue) === 0) {
         return false;
       }
       return true;
 
     case "notEndWith":
-      if (getType(value) !== 'string') value = value.toString();
-	  if (value.lastIndexOf(expectedValue) + expectedValue.length === value.length) {
+      if (getType(value) !== "string") value = value.toString();
+      if (
+        value.lastIndexOf(expectedValue) + expectedValue.length ===
+        value.length
+      ) {
         return false;
       }
       return true;
 
     case "hasLengthOf":
-      if (getType(value) !== 'string') value = value.toString();
+      if (getType(value) !== "string") value = value.toString();
       if (value.length !== expectedValue) {
         return false;
       }
       return true;
-      
+
     case "isType":
       if (getType(value) !== expectedValue) {
         return false;
       }
       return true;
-    
+
     case "notType":
       if (getType(value) === expectedValue) {
         return false;
@@ -292,8 +306,8 @@ const isValid = (value, condition, expectedValue) => {
 // value type === value
 // whole table is about one value (ignore keys)
 const validateValue = (value, table) => {
-  if (['array', 'object'].some((item) => item === getType(value))) {
-    newError(value, 'is single value', 'string or number');
+  if (["array", "object"].some(item => item === getType(value))) {
+    newError(value, "is single value", "string or number");
   } else {
     for (let i = 0; i < table.length; i++) {
       if (!isValid(value, table[i].condition, table[i].conditionValue)) {
@@ -307,7 +321,9 @@ const validateValue = (value, table) => {
 // for each row in table look for key and validate
 const validateObject = (item, table) => {
   for (let i = 0; i < table.length; i++) {
-    if (!isValid(item[table[i].key], table[i].condition, table[i].conditionValue)) {
+    if (
+      !isValid(item[table[i].key], table[i].condition, table[i].conditionValue)
+    ) {
       newError(item[table[i].key], table[i].condition, table[i].conditionValue);
     }
   }
@@ -317,7 +333,7 @@ const validateObject = (item, table) => {
 // for each item in array run validation
 const validateArray = (arr, table) => {
   for (let i = 0; i < arr.length; i++) {
-    if (typeof arr[i] === 'object') {
+    if (typeof arr[i] === "object") {
       validateObject(arr[i], table);
     } else {
       validateValue(arr[i], table);
@@ -329,13 +345,13 @@ const validateArray = (arr, table) => {
 const getDataLayerValue = (copyFromDataLayerFunc, key) => {
   if (key.indexOf(".0") !== -1) {
     const split = key.split(".0");
-	const initialValue = copyFromDataLayerFunc(split[0]);
+    const initialValue = copyFromDataLayerFunc(split[0]);
     if (!initialValue) return initialValue;
-    
+
     return split.slice(1).reduce((a, v) => {
       if (getType(a) !== "array") return undefined;
       if (!v) return a[0];
-      
+
       return deepValue(a[0], v.slice(1));
     }, initialValue);
   }
@@ -350,33 +366,33 @@ const dataLayerValue = getDataLayerValue(copyFromDataLayer, data.dataLayerKey);
 // Don't validate if item is undefined
 // But add error if item is required
 if (!debugMode) {
-  if (typeof dataLayerValue === 'undefined') {
+  if (typeof dataLayerValue === "undefined") {
     if (data.required === true) {
-      newError(dataLayerValue, 'required', 'true');
+      newError(dataLayerValue, "required", "true");
     }
   } else {
     switch (valueType) {
       case "value":
         // Exit early if there are no table values.
-		if (!validationTable) break;
+        if (!validationTable) break;
         validateValue(dataLayerValue, validationTable);
         break;
 
-      case 'object':
-        if (getType(dataLayerValue) !== 'object') {
-          newError(dataLayerValue, 'typeOf', 'object');
+      case "object":
+        if (getType(dataLayerValue) !== "object") {
+          newError(dataLayerValue, "typeOf", "object");
         }
         // Exit early if there are no table values.
-		if (!validationTable) break;
+        if (!validationTable) break;
         validateObject(dataLayerValue, validationTable);
         break;
 
-      case 'array': 
-        if (getType(dataLayerValue) !== 'array') {
-          newError(dataLayerValue, 'typeOf', 'array');
+      case "array":
+        if (getType(dataLayerValue) !== "array") {
+          newError(dataLayerValue, "typeOf", "array");
         }
         // Exit early if there are no table values.
-		if (!validationTable) break;
+        if (!validationTable) break;
         validateArray(dataLayerValue, validationTable);
         break;
 
