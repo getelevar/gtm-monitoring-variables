@@ -1,8 +1,16 @@
-﻿___INFO___
+﻿___TERMS_OF_SERVICE___
+
+By creating or modifying this file you agree to Google Tag Manager's Community
+Template Gallery Developer Terms of Service available at
+https://developers.google.com/tag-manager/gallery-tos (or such other URL as
+Google may provide), as modified from time to time.
+
+
+___INFO___
 
 {
-  "displayName": "Elevar - DataLayer Variable with Validation",
-  "description": "Add core dataLayer values to check. Use the dropdown to select a conditional statement to check against.",
+  "displayName": "Elevar Monitoring Variable",
+  "description": "Add tracking and validation to your variable values, make sure no errors go unnoticed \u0026 fix critical errors immediately.\n\nThe variables work in combination with The Elevar Monitoring Core Tag.",
   "securityGroups": [],
   "id": "cvt_temp_public_id",
   "type": "MACRO",
@@ -25,24 +33,26 @@ ___TEMPLATE_PARAMETERS___
       {
         "type": "NON_EMPTY"
       }
-    ]
+    ],
+    "help": "This should equal the GTM Variable Name. This is used to report what tags were associated to the error to the Elevar Monitoring dashboard."
   },
   {
     "type": "TEXT",
     "name": "dataLayerKey",
     "displayName": "Data Layer Key",
     "simpleValueType": true,
-    "help": "Fill in the dataLayer key using just the name of the key itself. If you have nested keys, ie. { meta : { country : \u0027nl\u0027, language : \u0027en\u0027} then use dot notation, ie. meta.country or meta.language. *NOTE* Make sure to add every key being monitored to the Permissions.",
+    "help": "Fill in the dataLayer key using just the name of the key itself. If you have nested keys, ie. { meta : { country : \u0027nl\u0027, language : \u0027en\u0027} then use dot notation, ie. meta.country or meta.language. \u003cstrong\u003eNOTE:\u003c/strong\u003e Make sure that every key used is also included in the Permissions.",
     "valueValidators": [
       {
         "type": "NON_EMPTY"
       }
-    ]
+    ],
+    "valueHint": "ecommerce.purchase.products"
   },
   {
     "type": "RADIO",
     "name": "required",
-    "displayName": "Required?",
+    "displayName": "Required",
     "radioItems": [
       {
         "value": true,
@@ -53,7 +63,8 @@ ___TEMPLATE_PARAMETERS___
         "displayValue": "False"
       }
     ],
-    "simpleValueType": true
+    "simpleValueType": true,
+    "help": "Should the variable always contain a value when it is used or can it also be undefined?"
   },
   {
     "type": "RADIO",
@@ -74,7 +85,8 @@ ___TEMPLATE_PARAMETERS___
         "displayValue": "Object"
       }
     ],
-    "simpleValueType": true
+    "simpleValueType": true,
+    "help": "What type of value should the data layer key contain. This is used to validate the input in a different way. \u003cstrong\u003eValue:\u003c/strong\u003e The value must match all of the conditions. \u003cstrong\u003eArray: \u003c/strong\u003e\nEach item in the array must match the each condition. \u003cstrong\u003eObject: \u003c/strong\u003e Validation is performed against object keys."
   },
   {
     "type": "SIMPLE_TABLE",
@@ -153,7 +165,8 @@ ___TEMPLATE_PARAMETERS___
     "name": "debugMode",
     "simpleValueType": true,
     "defaultValue": "{{Debug Mode}}",
-    "displayName": "Debug Mode Variable"
+    "displayName": "Debug Mode Variable",
+    "help": "The Debug Mode Variable is used to capture errors only when not in Preview Mode. In Preview Mode variables behave differently and they are calculated even when tags don\u0027t use them."
   }
 ]
 
