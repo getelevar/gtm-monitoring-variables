@@ -11,7 +11,7 @@ ___INFO___
 {
   "displayName": "Elevar Monitoring Variable",
   "description": "Add tracking and validation to your variable values, make sure no errors go unnoticed \u0026 fix critical errors immediately.\n\nThe variables work in combination with The Elevar Monitoring Core Tag.",
-  "categories": ["ANALYTICS", "TAG_MANAGEMENT", "UTILITY"],
+  "categories": ["UTILITY", "ANALYTICS", "TAG_MANAGEMENT"],
   "securityGroups": [],
   "id": "cvt_temp_public_id",
   "type": "MACRO",
