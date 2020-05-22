@@ -180,6 +180,8 @@ const getType = require("getType");
 const copyFromDataLayer = require("copyFromDataLayer");
 const createQueue = require("createQueue");
 
+const VERSION = "1.1";
+
 const addValidationError = createQueue("elevar_gtm_errors");
 
 // Object path traversal function
@@ -192,12 +194,14 @@ const deepValue = (obj, path) => path.split(".").reduce((a, v) => a[v], obj);
  * message - error message
  * error_id - id that can be used to identify errors
  */
-const addError = (eventId, dataLayerKey, variableName) => (
+const addError = (eventName, eventId, dataLayerKey, variableName) => (
   value,
   condition,
   expected
 ) => {
   log("GTM Error: ", {
+    version: VERSION,
+    eventName: eventName,
     eventId: eventId,
     dataLayerKey: dataLayerKey,
     variableName: variableName,
@@ -209,6 +213,8 @@ const addError = (eventId, dataLayerKey, variableName) => (
   });
 
   addValidationError({
+    version: VERSION,
+    eventName: eventName,
     eventId: eventId,
     dataLayerKey: dataLayerKey,
     variableName: variableName,
@@ -222,6 +228,7 @@ const addError = (eventId, dataLayerKey, variableName) => (
 };
 
 const newError = addError(
+  copyFromDataLayer('event'),
   data.gtmEventId,
   data.dataLayerKey,
   data.variableName
@@ -1010,31 +1017,66 @@ scenarios:
     assertThat(variableResult).isNotEqualTo(undefined);
     assertThat(variableResult).isEqualTo({ name: 'bob', type: 'person' });
     assertThat(window.elevar_gtm_errors).hasLength(1);
+- name: Data / Contains Event Name
+  code: |-
+    mockData = {
+      variableName: "Variable Name",
+      valueType: "value",
+      validationTable: [{ key: "", condition: "isType", conditionValue: "string" }],
+      debugMode: false,
+      dataLayerKey: "ecommerce.impressions.0.price",
+      required: true,
+      gtmEventId: 0
+    };
+
+    let variableResult = runCode(mockData);
+
+    assertThat(variableResult).isEqualTo(100);
+    assertThat(window.elevar_gtm_errors).hasLength(1);
+    assertThat(window.elevar_gtm_errors[0].eventName).isEqualTo("gtm.load");
+- name: Data / Send version number
+  code: |-
+    mockData = {
+      variableName: "Variable Name",
+      valueType: "value",
+      validationTable: [{ key: "", condition: "isType", conditionValue: "string" }],
+      debugMode: false,
+      dataLayerKey: "ecommerce.impressions.0.price",
+      required: true,
+      gtmEventId: 0
+    };
+
+    let variableResult = runCode(mockData);
+
+    assertThat(variableResult).isEqualTo(100);
+    assertThat(window.elevar_gtm_errors).hasLength(1);
+    assertThat(window.elevar_gtm_errors[0].version).isEqualTo("1.0");
 setup: "const log = require('logToConsole');\n\n/* MockData provided by input fields\
   \ */\nlet mockData = {\n  variableName: \"Variable Name\",\n  valueType: \"value\"\
   ,\n  validationTable: [{ key: \"\", condition: \"isType\", conditionValue: \"number\"\
   \ }],\n  debugMode: false,\n  dataLayerKey: \"ecommerce.impressions.0.price\",\n\
   \  required: true,\n  gtmEventId: 0\n};\n\nlet window = {};\nlet dataLayer = {\n\
-  \  ecommerce: {\n    currencyCode: \"USD\",\n    actionField: {\n      list: \"\
-  Shopping Cart\",\n      search: \"hello\"\n    },\n    objectList: [{name: 'bob',\
-  \ type: 'person'}, {name: 'reese', type: 'person'}],\n    productNames: ['name1',\
-  \ 'name2', 'name3'],\n    impressions: [\n      {\n        position: 0,\n      \
-  \  id: \"\",\n        productId: 4518425362468,\n        variantId: 31697496047652,\n\
+  \  event: 'gtm.load',\n  ecommerce: {\n    currencyCode: \"USD\",\n    actionField:\
+  \ {\n      list: \"Shopping Cart\",\n      search: \"hello\"\n    },\n    objectList:\
+  \ [{name: 'bob', type: 'person'}, {name: 'reese', type: 'person'}],\n    productNames:\
+  \ ['name1', 'name2', 'name3'],\n    impressions: [\n      {\n        position: 0,\n\
+  \        id: \"\",\n        productId: 4518425362468,\n        variantId: 31697496047652,\n\
   \        shopifyId: \"shopify_US_4518425362468_31697496047652\",\n        name:\
   \ \"14 Day Challenge - Starts March 9th\",\n        isCool: true,\n        quantity:\
   \ 1,\n        price: 100,\n        brand: \"Elevar Gear - This is a Test Store\"\
   ,\n        variant: null\n      },\n    ]\n  }\n};\n\nmock('copyFromDataLayer',\
-  \ (variableName) => {\n  switch(variableName) {\n    case \"ecommerce\":\n     \
-  \ return dataLayer.ecommerce;\n    case \"ecommerce.currencyCode\":\n      return\
-  \ dataLayer.ecommerce.currencyCode;\n    case \"ecommerce.impressions\":\n     \
-  \ return dataLayer.ecommerce.impressions;\n    case \"ecommerce.objectList\":\n\
-  \      return dataLayer.ecommerce.objectList;\n    case \"ecommerce.productNames\"\
-  :\n      return dataLayer.ecommerce.productNames;\n    case \"ecommerce.actionField\"\
-  :\n      return dataLayer.ecommerce.actionField;\n    default:\n      return undefined;\n\
-  \  }\n});\n\n/*\nCreates an array in the window with the key provided and\nreturns\
-  \ a function that pushes items to that array.\n*/\nmock('createQueue', (key) =>\
-  \ {\n  const pushToArray = (arr) => (item) => {\n    arr.push(item);\n  };\n  \n\
-  \  if (!window[key]) window[key] = [];\n  return pushToArray(window[key]);\n});\n"
+  \ (variableName) => {\n  switch(variableName) {\n    case \"event\":\n      return\
+  \ dataLayer.event;\n    case \"ecommerce\":\n      return dataLayer.ecommerce;\n\
+  \    case \"ecommerce.currencyCode\":\n      return dataLayer.ecommerce.currencyCode;\n\
+  \    case \"ecommerce.impressions\":\n      return dataLayer.ecommerce.impressions;\n\
+  \    case \"ecommerce.objectList\":\n      return dataLayer.ecommerce.objectList;\n\
+  \    case \"ecommerce.productNames\":\n      return dataLayer.ecommerce.productNames;\n\
+  \    case \"ecommerce.actionField\":\n      return dataLayer.ecommerce.actionField;\n\
+  \    default:\n      return undefined;\n  }\n});\n\n/*\nCreates an array in the\
+  \ window with the key provided and\nreturns a function that pushes items to that\
+  \ array.\n*/\nmock('createQueue', (key) => {\n  const pushToArray = (arr) => (item)\
+  \ => {\n    arr.push(item);\n  };\n  \n  if (!window[key]) window[key] = [];\n \
+  \ return pushToArray(window[key]);\n});\n"
 
 
 ___NOTES___
