@@ -1,6 +1,8 @@
 homepage: "https://www.getelevar.com"
 documentation: "https://github.com/getelevar/gtm-monitoring-variables/blob/master/README.md"
 versions:
+  - sha: 6c1741ab406aaa916449ae22ea7327e32629ba8d
+    changeNotes: Add regexp to validate data layer keys against and provide valuable information to template users.
   - sha: a9d3c20e04fc06f73a2caded55bbe5be478a6668
     changeNotes: Get Event Name with built in functions and add version to template to keep track of changes.
   - sha: 14e4407e08ca58a00bd1071d868d9163ec9a2d3b
