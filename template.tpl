@@ -11,7 +11,11 @@ ___INFO___
 {
   "displayName": "Elevar Monitoring Variable",
   "description": "Add tracking and validation to your variable values, make sure no errors go unnoticed \u0026 fix critical errors immediately.\n\nThe variables work in combination with The Elevar Monitoring Core Tag.",
-  "categories": ["UTILITY", "ANALYTICS", "TAG_MANAGEMENT"],
+  "categories": [
+    "UTILITY",
+    "ANALYTICS",
+    "TAG_MANAGEMENT"
+  ],
   "securityGroups": [],
   "id": "cvt_temp_public_id",
   "type": "MACRO",
@@ -46,6 +50,13 @@ ___TEMPLATE_PARAMETERS___
     "valueValidators": [
       {
         "type": "NON_EMPTY"
+      },
+      {
+        "type": "REGEX",
+        "args": [
+          "/(^(ecommerce\\..*)$|^(ecommerce|VariantPrice|VisitorType|orderEmail|CustomerPhone|CustomerLastName|CustomerFirstName|SearchTerms|CustomerEmail|visitorId|visitorType|CustomerId|CustomerOrdersCount|CustomerTotalSpent|pageType|cartTotal|shopifyProductId|VariantCompareAtPrice|cartItems|event|discountTotalAmount|discountTotalSavings|CustomerCity|CustomerZip|CustomerAddress1|CustomerAddress2|CustomerCountryCode|CustomerProvince|CustomerOrdersCount)$)/"
+        ],
+        "errorMessage": "This key is currently not supported by the template. Reach out to help@getelevar.com if you think it should be."
       }
     ],
     "valueHint": "ecommerce.purchase.products"
