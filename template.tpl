@@ -54,7 +54,7 @@ ___TEMPLATE_PARAMETERS___
       {
         "type": "REGEX",
         "args": [
-          "/(^(ecommerce\\..*)$|^(ecommerce|VariantPrice|VisitorType|orderEmail|CustomerPhone|CustomerLastName|CustomerFirstName|SearchTerms|CustomerEmail|visitorId|visitorType|CustomerId|CustomerOrdersCount|CustomerTotalSpent|pageType|cartTotal|shopifyProductId|VariantCompareAtPrice|cartItems|event|discountTotalAmount|discountTotalSavings|CustomerCity|CustomerZip|CustomerAddress1|CustomerAddress2|CustomerCountryCode|CustomerProvince|CustomerOrdersCount)$)/"
+          "(^(ecommerce\\..*)$|^(ecommerce|VariantPrice|VisitorType|orderEmail|CustomerPhone|CustomerLastName|CustomerFirstName|SearchTerms|CustomerEmail|visitorId|visitorType|CustomerId|CustomerOrdersCount|CustomerTotalSpent|pageType|cartTotal|shopifyProductId|VariantCompareAtPrice|cartItems|event|discountTotalAmount|discountTotalSavings|CustomerCity|CustomerZip|CustomerAddress1|CustomerAddress2|CustomerCountryCode|CustomerProvince|CustomerOrdersCount)$)"
         ],
         "errorMessage": "This key is currently not supported by the template. Reach out to help@getelevar.com if you think it should be."
       }
