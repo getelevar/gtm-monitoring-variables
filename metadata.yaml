@@ -1,6 +1,8 @@
 homepage: "https://www.getelevar.com"
 documentation: "https://github.com/getelevar/gtm-monitoring-variables/blob/master/README.md"
 versions:
+  - sha: 7f646a60def211b00d0747dc87b4b160197ffb43
+    changeNotes: Fix issue with template key validation regex.
   - sha: 6c1741ab406aaa916449ae22ea7327e32629ba8d
     changeNotes: Add regexp to validate data layer keys against and provide valuable information to template users.
   - sha: a9d3c20e04fc06f73a2caded55bbe5be478a6668
