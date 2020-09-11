@@ -1,8 +1,10 @@
+Fixes # .
 
+**Changes in this pull request:**
 
 ---
 
-### Checklist
+**Checklist**
 
 - [ ] Incremented template version in code
 - [ ] Added new release in metadata
