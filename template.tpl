@@ -1,12 +1,4 @@
-﻿___TERMS_OF_SERVICE___
-
-By creating or modifying this file you agree to Google Tag Manager's Community
-Template Gallery Developer Terms of Service available at
-https://developers.google.com/tag-manager/gallery-tos (or such other URL as
-Google may provide), as modified from time to time.
-
-
-___INFO___
+﻿___INFO___
 
 {
   "displayName": "Elevar Monitoring Variable",
@@ -54,7 +46,7 @@ ___TEMPLATE_PARAMETERS___
       {
         "type": "REGEX",
         "args": [
-          "(^(ecommerce\\..*)$|^(ecommerce|VariantPrice|VisitorType|orderEmail|CustomerPhone|CustomerLastName|CustomerFirstName|SearchTerms|CustomerEmail|visitorId|visitorType|CustomerId|CustomerOrdersCount|CustomerTotalSpent|pageType|cartTotal|shopifyProductId|VariantCompareAtPrice|cartItems|event|discountTotalAmount|discountTotalSavings|CustomerCity|CustomerZip|CustomerAddress1|CustomerAddress2|CustomerCountryCode|CustomerProvince|CustomerOrdersCount)$)"
+          "(^(ecommerce\\..*)$|^(user_properties\\..*)$|^(ecommerce|VariantPrice|VisitorType|orderEmail|CustomerPhone|CustomerLastName|CustomerFirstName|SearchTerms|CustomerEmail|visitorId|visitorType|CustomerId|CustomerOrdersCount|CustomerTotalSpent|pageType|cartTotal|shopifyProductId|VariantCompareAtPrice|cartItems|event|discountTotalAmount|discountTotalSavings|CustomerCity|CustomerZip|CustomerAddress1|CustomerAddress2|CustomerCountryCode|CustomerProvince|CustomerOrdersCount|cart_total)$)"
         ],
         "errorMessage": "This key is currently not supported by the template. Reach out to help@getelevar.com if you think it should be."
       }
@@ -479,6 +471,10 @@ ___WEB_PERMISSIONS___
               },
               {
                 "type": 1,
+                "string": "user_properties.*"
+              },
+              {
+                "type": 1,
                 "string": "VariantPrice"
               },
               {
@@ -588,6 +584,10 @@ ___WEB_PERMISSIONS___
               {
                 "type": 1,
                 "string": "CustomerOrdersCount"
+              },
+              {
+                "type": 1,
+                "string": "cart_total"
               }
             ]
           }
