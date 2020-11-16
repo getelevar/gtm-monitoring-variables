@@ -1,6 +1,8 @@
 homepage: "https://www.getelevar.com"
 documentation: "https://github.com/getelevar/gtm-monitoring-variables/blob/master/README.md"
 versions:
+  - sha: b740d171facd853e3d7ebb372993b0934cee5717
+    changeNotes: Add additional ga4 keys to permissions and regex.
   - sha: 7f646a60def211b00d0747dc87b4b160197ffb43
     changeNotes: Fix issue with template key validation regex.
   - sha: 6c1741ab406aaa916449ae22ea7327e32629ba8d
