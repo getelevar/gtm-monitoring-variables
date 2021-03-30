@@ -475,6 +475,10 @@ ___WEB_PERMISSIONS___
             "listItem": [
               {
                 "type": 1,
+                "string": "analytics.*"
+              },
+              {
+                "type": 1,
                 "string": "ecommerce.*"
               },
               {
