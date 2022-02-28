@@ -1073,7 +1073,7 @@ scenarios:
 
     assertThat(variableResult).isEqualTo(100);
     assertThat(window.elevar_gtm_errors).hasLength(1);
-    assertThat(window.elevar_gtm_errors[0].version).isEqualTo("1.0");
+    assertThat(window.elevar_gtm_errors[0].version).isEqualTo("1.1");
 setup: "const log = require('logToConsole');\n\n/* MockData provided by input fields\
   \ */\nlet mockData = {\n  variableName: \"Variable Name\",\n  valueType: \"value\"\
   ,\n  validationTable: [{ key: \"\", condition: \"isType\", conditionValue: \"number\"\
