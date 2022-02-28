@@ -1,6 +1,8 @@
 homepage: "https://www.getelevar.com"
 documentation: "https://github.com/getelevar/gtm-monitoring-variables/blob/master/README.md"
 versions:
+  - sha: 969c0104f4895b56505909aa36c88d54e43bf801
+    changeNotes: Fix failing test.
   - sha: 616914ea9789915f25c3f55920b6da6b00fe4bb3
     changeNotes: Add additional carthook keys to permissions and regex.
   - sha: a14d3e655dd508ec15eecdeb2d63fa1c1af5e507
